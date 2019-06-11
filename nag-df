@@ -1,0 +1,14 @@
+#! /bin/env python
+
+import cron_tools
+
+COMMANDS = ['"{SSH}" boot "/bin/df" > "{TMP_DF}" 2>/dev/null',
+            '"{SCP}" -i "{SSH_ID}" "{TMP_DF}" nagios@{NAGIP}:"{DEST_DF} >/dev/null 2>&1"'
+            ]
+
+
+def main():
+    this_job = cron_tools.Cron_Job(__file__,COMMANDS)
+    this_job.runCommandsInConfigContext()
+
+if __name__ == "__main__" : main()

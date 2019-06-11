@@ -1,0 +1,14 @@
+#! /bin/env python
+import cron_tools
+
+
+COMMANDS = ['{SSH} boot "/opt/cray/pdsh/default/bin/pdsh -w lnet[1-130] cat /proc/meminfo 2>/dev/null" > {TMP_LNET} 2>/dev/null',
+ '{SCP} -i {SSH_ID} {TMP_LNET} nagios@{NAGIP}:{DEST_LNET} >/dev/null 2>&1',
+ '{SSH} -i {SSH_ID} nagios@{NAGIP} "/usr/lib64/nagios/plugins/check_mem_lnet" >/dev/null 2>&1'
+            ]
+
+def main():
+    this_job = cron_tools.Cron_Job(__file__,COMMANDS)
+    this_job.runCommandsInConfigContext()
+
+if __name__ == "__main__" : main()

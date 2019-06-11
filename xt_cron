@@ -1,0 +1,17 @@
+#! /bin/env python
+import cron_tools
+
+
+COMMANDS = ['{XTCLI} status all > {TMP_XTCLI} 2>/dev/null',
+ '{SSH} boot {XTPROCADMIN} > {TMP_XTPROC} 2>/dev/null',
+ '{SCP} -i {SSH_ID} {TMP_XTCLI} nagios@{NAGIP}:{DEST_XTCLI} >/dev/null 2>&1',
+ '{SCP} -i {SSH_ID} {TMP_XTPROC} nagios@{NAGIP}:{DEST_XTPROC} >/dev/null 2>&1',
+ '{SSH} -i {SSH_ID} nagios@{NAGIP} "/usr/lib64/nagios/plugins/check_xt_tier2" >/dev/null 2>&1',
+ '{SSH} -i {SSH_ID} nagios@{NAGIP} "/usr/lib64/nagios/plugins/check_xt_lnet" >/dev/null 2>&1'
+            ]
+
+def main():
+    this_job = cron_tools.Cron_Job(__file__,COMMANDS)
+    this_job.runCommandsInConfigContext()
+
+if __name__ == "__main__" : main()

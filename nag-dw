@@ -1,0 +1,28 @@
+#! /bin/env python
+import cron_tools
+
+
+COMMANDS = ['{SSH} boot {DWSTAT} nodes > {TMP_DWSTAT} 2>/dev/null',
+ '{SSH} boot {DWSTAT} fragments > {TMP_DWFRAG} 2>/dev/null',
+ '{SSH} boot {DWSTAT} instances > {TMP_DWINST} 2>/dev/null',
+ '{SSH} boot {DWSTAT} sessions > {TMP_DWSESS} 2>/dev/null',
+ '{SSH} boot {DWSTAT} activations" > {TMP_DWACT} 2>/dev/null',
+ '{SSH} boot {DWSTAT} configurations > {TMP_DWCONF} 2>/dev/null',
+ '{SSH} boot {DWSTAT} registrations" > {TMP_DWREG} 2>/dev/null',
+ '{SCP} -i {SSH_ID} {TMP_DWSTAT} nagios@{NAGIP}:{DEST_DWSTAT} >/dev/null 2>&1',
+ '{SCP} -i {SSH_ID} {TMP_DWFRAG} nagios@{NAGIP}:{DEST_DWFRAG} >/dev/null 2>&1',
+ '{SCP} -i {SSH_ID} {TMP_DWINST} nagios@{NAGIP}:{DEST_DWINST} >/dev/null 2>&1',
+ '{SCP} -i {SSH_ID} {TMP_DWSESS} nagios@{NAGIP}:{DEST_DWSESS} >/dev/null 2>&1',
+ '{SCP} -i {SSH_ID} {TMP_DWACT} nagios@{NAGIP}:{DEST_DWACT} >/dev/null 2>&1',
+ '{SCP} -i {SSH_ID} {TMP_DWCONF} nagios@{NAGIP}:{DEST_DWCONF} >/dev/null 2>&1',
+ '{SCP} -i {SSH_ID} {TMP_DWREG} nagios@{NAGIP}:{DEST_DWREG} >/dev/null 2>&1',
+ '{SSH} -i {SSH_ID} nagios@{NAGIP} "/usr/lib64/nagios/plugins/check_dwhealth" >/dev/null 2>&1',
+ '{SSH} -i {SSH_ID} nagios@{NAGIP} "/usr/lib64/nagios/plugins/check_dwstat" >/dev/null 2>&1',
+ '{SSH} -i {SSH_ID} nagios@{NAGIP} "/usr/lib64/nagios/plugins/check_dwpool" >/dev/null 2>&1'
+            ]
+
+def main():
+    this_job = cron_tools.Cron_Job(__file__,COMMANDS)
+    this_job.runCommandsInConfigContext()
+
+if __name__ == "__main__" : main()

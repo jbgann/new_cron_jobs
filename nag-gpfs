@@ -1,0 +1,15 @@
+#! /bin/env python
+
+import cron_tools
+
+COMMANDS = ["{SSH} {MS} ssh {ELOGIN} {MMGETSTATE} -L -a > {TMP_MMGETSTATE} 2>/dev/null",
+            "{SCP} -i {SSH_ID} {TMP_MMGETSTATE} nagios@{NAGIP}:{DEST_MMGETSTATE} >/dev/null 2>&1",
+            "{SSH} -i {SSH_ID} nagios@{NAGIP} \"/usr/lib64/nagios/plugins/check_gpfs\" > /dev/null 2>&1"
+            ]
+
+
+def main():
+    this_job = cron_tools.Cron_Job(__file__,COMMANDS)
+    this_job.runCommandsInConfigContext()
+
+if __name__ == "__main__" : main()

@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+
+import cron_tools
+import config
+
+reader = cron_tools.Logger(config.cron_log,"r")
+
+print reader.get_log_as_string()

@@ -1,0 +1,17 @@
+#! /bin/env python
+
+import cron_tools
+
+COMMANDS = ['''"{SSH}" {SYS_PREFIX}ms1 /opt/cray/pdsh/2.26-11.1/bin/pdsh -w "{SYS_PREFIX}[01-23],{SYS_PREFIX}que0[1,2],cpurge01" "tail /var/opt/cray/log/ansible/ansible-booted | grep 'failed='" > "{TMP_ANSIBLE}" 2>/dev/null''',
+            '''echo "{SYS_PREFIX}smw1: $("{SSH}" {SYS_PREFIX}smw1 "tail /var/opt/cray/log/ansible/ansible-booted | grep 'failed='" 2>/dev/null)" >> {TMP_ANSIBLE}" 2>/dev/null''',
+            '''"{SCP}" -i "{SSH_ID}" "{TMP_ANSIBLE}" nagios@{NAGIP}:"{DEST_ANSIBLE}" >/dev/null 2>&1''',
+            '''"{SCP}" -i "{SSH_ID}" "{TMP_ANSIBLE}" nagios@{NAGIP}:"{DEST_ANSIBLE}" >/dev/null 2>&1''',
+            '''"{SSH}" -i "{SSH_ID}" nagios@{NAGIP} "/usr/lib64/nagios/plugins/check_ansible_booted" >/dev/null 2>&1'''
+            ]
+
+
+def main():
+    this_job = cron_tools.Cron_Job(__file__,COMMANDS)
+    this_job.runCommandsInConfigContext()
+
+if __name__ == "__main__" : main()

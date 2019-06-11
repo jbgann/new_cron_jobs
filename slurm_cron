@@ -1,0 +1,23 @@
+#! /bin/env python
+import cron_tools
+
+
+COMMANDS = ['''{XTCLI} status all > {TMP_XTCLI} 2>/dev/null''',
+'''{SSH} boot {XTPROCADMIN} > {TMP_XTPROC} 2>/dev/null''',
+'''{SSH} boot 'echo "/usr/bin/sinfo -a -o \"%b;%P;%a;%T;%N;%H;\\\"%E\\\"\"" > /tmp/get_sinfo; . /tmp/get_sinfo' > {TMP_SLURM} 2>/dev/null''',
+'''{SSH} boot "ssh ctl1 \"/usr/bin/sacct -a --duplicates -X -o 'JobID, State, User, End, NodeList%20000'\"" | tr -s " " > {TMP_SACCT} 2>/dev/null''',
+'''{SCP} -i {SSH_ID} {TMP_SACCT} nagios@{NAGIP}:{DEST_SACCT} >/dev/null 2>&1''',
+'''{SCP} -i {SSH_ID} {TMP_SLURM} nagios@${NAGIP}:{DEST_SLURM} >/dev/null 2>&1''',
+'''{SCP} -i {SSH_ID} {TMP_XTCLI} nagios@${NAGIP}:{DEST_XTCLI} >/dev/null 2>&1''',
+'''{SCP} -i {SSH_ID} {TMP_XTPROC} nagios@${NAGIP}:{DEST_XTPROC} >/dev/null 2>&1''',
+'''{SSH} -i {SSH_ID} nagios@{NAGIP} "/usr/lib64/nagios/plugins/check_nodestatus" >/dev/null 2>&1''',
+'''{SSH} -i {SSH_ID} nagios@{NAGIP} "/usr/lib64/nagios/plugins/check_xt_tier2" >/dev/null 2>&1''',
+'''{SSH} -i {SSH_ID} nagios@{NAGIP} "/usr/lib64/nagios/plugins/check_xt_lnet" >/dev/null 2>&1''',
+'''{SSH} -i {SSH_ID} nagios@{NAGIP} "/usr/lib64/nagios/plugins/check_xt_bridge" >/dev/null 2>&1'''
+            ]
+
+def main():
+    this_job = cron_tools.Cron_Job(__file__,COMMANDS)
+    this_job.runCommandsInConfigContext()
+
+if __name__ == "__main__" : main()
